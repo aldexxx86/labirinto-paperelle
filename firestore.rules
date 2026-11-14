@@ -1,10 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Regole preesistenti del progetto: accesso libero a tutte le collezioni,
-    // tranne "classifica" che ha regole proprie (sotto).
-    match /{collection}/{document=**} {
-      allow read, write: if collection != 'classifica';
+    // Tutto il resto del database è chiuso: nessun accesso dalle app.
+    // (I dati restano visibili e modificabili dalla console Firebase.)
+    match /{document=**} {
+      allow read, write: if false;
     }
 
     // Paperelle nel Labirinto: classifica/{difficolta}/punteggi/{id}
