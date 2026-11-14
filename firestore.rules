@@ -15,8 +15,5 @@ service cloud.firestore {
         && request.resource.data.date == request.time;
       allow update, delete: if false;
     }
-    match /{document=**} {
-      allow read, write: if false;
-    }
   }
 }
