@@ -99,7 +99,9 @@
   #guide h3 { margin: 16px 0 4px; color: var(--accent); font-size: 16px; }
   #guide p, #guide li { font-size: 15px; line-height: 1.5; margin: 4px 0; }
   #guide ul { margin: 4px 0; padding-left: 20px; }
-  .credits { margin-top: 14px; font-size: 12px; opacity: .55; }
+  .credits { margin-top: 16px; font-size: 13px; opacity: .75; line-height: 1.7; cursor: default; }
+  .credits a { color: var(--accent); text-decoration: none; }
+  .credits a:hover { text-decoration: underline; }
   .boardStatus { font-size: 12px; opacity: .7; margin: -4px 0 8px; }
   .endgrid { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
   @media (max-width: 760px) { #topbar { flex-wrap: wrap; justify-content: center; width: 96vw; } #enemies { display: none; } .keys { grid-template-columns: auto 1fr; } }
@@ -146,7 +148,13 @@
       <button data-d="facile">Facile</button><button data-d="normale">Normale</button><button data-d="difficile">Difficile</button>
     </div>
     <span class="go" id="goLabel">Clicca per entrare</span><button class="ghost" id="guideBtn" type="button">Guida al gioco</button>
-    <div class="credits">© 2026 <a href="https://www.linkedin.com/in/matteo-alderighi" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:inherit">Matteo Alderighi</a> · Firenze, Italia · Licenza MIT</div>
+    <div class="credits" onclick="event.stopPropagation()">
+      Creato da <b>Matteo Alderighi</b> · Firenze, Italia · 2026 · realizzato con l'aiuto dell'AI<br>
+      <a href="https://www.linkedin.com/in/matteo-alderighi" target="_blank" rel="noopener">LinkedIn</a> ·
+      <a href="https://github.com/aldexxx86" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/aldexxx86/labirinto-paperelle" target="_blank" rel="noopener">Codice sorgente</a> ·
+      <a href="https://github.com/aldexxx86/labirinto-paperelle/blob/main/LICENSE" target="_blank" rel="noopener">Licenza MIT</a>
+    </div>
   </div>
 </div>
 
@@ -183,6 +191,11 @@
     </ul>
     <h3>Comandi</h3>
     <p>WASD per muoverti, mouse per mirare, clic per sparare, Shift per correre, 1–6 o rotella per cambiare arma, R per ricaricare, M per la mappa grande, Esc per la pausa.</p>
+    <h3>Autore e licenza</h3>
+    <p>Creato da Matteo Alderighi, Firenze, Italia, 2026, con l'aiuto dell'intelligenza artificiale.
+      <a href="https://www.linkedin.com/in/matteo-alderighi" target="_blank" rel="noopener" style="color:var(--accent)">LinkedIn</a> ·
+      <a href="https://github.com/aldexxx86" target="_blank" rel="noopener" style="color:var(--accent)">GitHub</a>.
+      Il codice è open source con <a href="https://github.com/aldexxx86/labirinto-paperelle/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--accent)">licenza MIT</a>.</p>
     <div style="text-align:center"><button class="go" id="guideClose" type="button">Ho capito</button></div>
   </div>
 </div>
@@ -201,6 +214,10 @@
       </div>
     </div>
     <button class="go" id="again">Rigioca</button>
+    <div class="credits">Paperelle nel Labirinto · © 2026 Matteo Alderighi ·
+      <a href="https://www.linkedin.com/in/matteo-alderighi" target="_blank" rel="noopener">LinkedIn</a> ·
+      <a href="https://github.com/aldexxx86/labirinto-paperelle" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/aldexxx86/labirinto-paperelle/blob/main/LICENSE" target="_blank" rel="noopener">Licenza MIT</a></div>
   </div>
 </div>
 
