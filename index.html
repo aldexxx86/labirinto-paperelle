@@ -112,24 +112,24 @@
   /* ---------- Comandi touch (telefono / tablet) ---------- */
   #touchUI { position: fixed; inset: 0; z-index: 5; display: none; touch-action: none; user-select: none; -webkit-user-select: none; }
   body.mobile.playing #touchUI { display: block; }
-  #joyZone { position: absolute; left: 0; bottom: 0; width: 45%; height: 70%; touch-action: none; }
-  #lookZone { position: absolute; right: 0; top: 0; width: 55%; height: 100%; touch-action: none; }
+  #joyZone { position: absolute; inset: 0; touch-action: none; }
   #joyBase { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%;
     border: 2px solid rgba(255,255,255,.35); background: rgba(255,255,255,.08); display: none; pointer-events: none; }
   #joyKnob { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%;
     background: rgba(255,210,63,.75); box-shadow: 0 2px 8px rgba(0,0,0,.5); }
-  #joyHint { position: absolute; left: max(28px, env(safe-area-inset-left)); bottom: 28px; width: 110px; height: 110px; border-radius: 50%;
-    border: 2px dashed rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-size: 11px; opacity: .7; pointer-events: none; text-align: center; }
+  #joyHint { position: absolute; left: 50%; top: 58%; transform: translateX(-50%); padding: 8px 14px; border-radius: 12px; background: rgba(10,14,30,.55);
+    font-size: 13px; line-height: 1.4; pointer-events: none; text-align: center; white-space: nowrap; }
   .tbtn { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); background: rgba(10,14,30,.55); color: var(--hud-fg);
     font-family: inherit; font-weight: 800; touch-action: none; display: flex; align-items: center; justify-content: center; padding: 0;
     -webkit-tap-highlight-color: transparent; }
   .tbtn:active, .tbtn.on { background: rgba(255,210,63,.45); }
-  #tFire { right: max(22px, env(safe-area-inset-right)); bottom: 26px; width: 92px; height: 92px; font-size: 15px; background: rgba(255,77,94,.45); border-color: rgba(255,160,170,.7); }
-  #tReload { right: calc(max(22px, env(safe-area-inset-right)) + 104px); bottom: 22px; width: 54px; height: 54px; font-size: 18px; }
-  #tNext { right: calc(max(22px, env(safe-area-inset-right)) + 14px); bottom: 132px; width: 50px; height: 50px; font-size: 18px; }
-  #tPrev { right: calc(max(22px, env(safe-area-inset-right)) + 72px); bottom: 118px; width: 46px; height: 46px; font-size: 16px; }
-  #tPause { right: max(12px, env(safe-area-inset-right)); top: 124px; width: 44px; height: 44px; font-size: 14px; }
-  #tMap { right: calc(max(12px, env(safe-area-inset-right)) + 52px); top: 124px; width: 44px; height: 44px; font-size: 11px; }
+  /* colonna destra allineata: FUOCO in basso, sopra ARMA e RICARICA affiancati; MAPPA e PAUSA sotto la minimappa */
+  #tFire { right: var(--sr); bottom: 20px; width: 124px; height: 96px; border-radius: 22px; font-size: 17px; background: rgba(255,77,94,.5); border-color: rgba(255,160,170,.75); }
+  #tWeapon { right: calc(var(--sr) + 66px); bottom: 128px; width: 58px; height: 52px; border-radius: 14px; font-size: 11px; }
+  #tReload { right: var(--sr); bottom: 128px; width: 58px; height: 52px; border-radius: 14px; font-size: 9.5px; }
+  #tMap { right: calc(var(--sr) + 66px); top: 124px; width: 58px; height: 40px; border-radius: 12px; font-size: 11px; }
+  #tPause { right: var(--sr); top: 124px; width: 58px; height: 40px; border-radius: 12px; font-size: 11px; }
+  #touchUI { --sr: max(12px, env(safe-area-inset-right)); }
   .touchHelp { display: none; }
   body.mobile .touchHelp { display: block; }
   body.mobile .keys { display: none; }
@@ -144,7 +144,7 @@
   body.mobile #health { left: max(8px, env(safe-area-inset-left)); top: 6px; bottom: auto; width: 130px; }
   body.mobile #hpText { font-size: 16px; }
   body.mobile .bar { height: 7px; }
-  body.mobile #weapon { right: calc(max(22px, env(safe-area-inset-right)) + 172px); bottom: 14px; min-width: 0; text-align: right; }
+  body.mobile #weapon { right: calc(max(12px, env(safe-area-inset-right)) + 136px); bottom: 20px; min-width: 0; text-align: right; }
   body.mobile #wName { font-size: 12px; }
   body.mobile #wAmmo { font-size: 20px; }
   body.mobile #wAmmo span { font-size: 12px; }
@@ -180,14 +180,12 @@
 <div id="fps" class="hud"></div>
 
 <div id="touchUI">
-  <div id="joyZone"><div id="joyHint">trascina<br>per muoverti</div><div id="joyBase"><div id="joyKnob"></div></div></div>
-  <div id="lookZone"></div>
+  <div id="joyZone"><div id="joyHint">Appoggia un dito e trascinalo:<br>su/giù per camminare, destra/sinistra per girare</div><div id="joyBase"><div id="joyKnob"></div></div></div>
   <button class="tbtn" id="tFire" type="button">FUOCO</button>
-  <button class="tbtn" id="tReload" type="button">R</button>
-  <button class="tbtn" id="tPrev" type="button">◀</button>
-  <button class="tbtn" id="tNext" type="button">▶</button>
+  <button class="tbtn" id="tWeapon" type="button">ARMA</button>
+  <button class="tbtn" id="tReload" type="button">RICARICA</button>
   <button class="tbtn" id="tMap" type="button">MAPPA</button>
-  <button class="tbtn" id="tPause" type="button">II</button>
+  <button class="tbtn" id="tPause" type="button">PAUSA</button>
 </div>
 
 <div id="overlay" class="overlay">
@@ -195,7 +193,7 @@
     <h1>Paperelle nel Labirinto</h1>
     <p>Mille paperelle girano per il labirinto e zombie, preti, suore spippate e leoni se le stanno mangiando. Il tuo punteggio è fatto dalle paperelle che restano vive: quelle arcobaleno valgono 5 punti.</p>
     <p>Elimina tutti i mangiapaperelle per vincere. Puoi colpire anche le paperelle, ma ti costa caro.</p>
-    <p class="touchHelp">Joystick a sinistra per muoverti (spingi fino in fondo per correre), trascina il dito a destra per guardarti intorno, tieni premuto FUOCO per sparare. ◀ ▶ cambiano arma, R ricarica.</p>
+    <p class="touchHelp">Si gioca con un dito: appoggialo ovunque sullo schermo e trascinalo in su per camminare (più lo sposti più vai veloce), in giù per indietreggiare, a destra o a sinistra per girarti. Con l'altro pollice tieni premuto FUOCO: la mira aggancia da sola il nemico davanti a te.</p>
     <div id="rotateHint">Gira il telefono in orizzontale per giocare meglio.</div>
     <div class="keys">
       <kbd>W A S D</kbd><span>muoviti</span>
@@ -258,7 +256,7 @@
       <li>Le esplosioni fanno male anche a te se sei troppo vicino.</li>
     </ul>
     <h3>Comandi da telefono o tablet</h3>
-    <p>Joystick a sinistra per muoverti (spingilo fino in fondo per correre), trascina il dito sulla metà destra dello schermo per guardarti intorno, tieni premuto FUOCO per sparare (mentre lo tieni premuto puoi anche trascinare per mirare). ◀ ▶ cambiano arma, R ricarica, MAPPA ingrandisce la mappa, II mette in pausa.</p>
+    <p>Basta un dito: appoggialo ovunque e trascinalo in su per camminare (più lontano = più veloce), in giù per indietreggiare, a destra o a sinistra per girarti. Tieni premuto FUOCO per sparare: la mira si aggancia da sola al nemico che hai davanti. ARMA cambia arma, RICARICA ricarica, MAPPA ingrandisce la mappa, PAUSA ferma il gioco.</p>
     <h3>Comandi da computer</h3>
     <p>WASD per muoverti, mouse per mirare, clic per sparare, Shift per correre, 1–6 o rotella per cambiare arma, R per ricaricare, M per la mappa grande, Esc per la pausa.</p>
     <h3>Autore e licenza</h3>
@@ -1456,12 +1454,13 @@ function cycleWeapon(dir) {
 }
 
 // ---------------- Comandi touch ----------------
-const touch = { moveX: 0, moveY: 0, joyId: null, jx: 0, jy: 0, lookIds: new Map() };
+const touch = { moveX: 0, moveY: 0, turn: 0, joyId: null, jx: 0, jy: 0 };
 let lastTouch = -1e9;
-const TOUCH_LOOK = 0.0055, JOY_R = 52;
+const TOUCH_TURN = 2.4, JOY_R = 60;     // rad/s a dito tutto spostato, raggio del joystick in px
 function bindTouch() {
-  const joyZone = $('joyZone'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), lookZone = $('lookZone');
+  const joyZone = $('joyZone'), joyBase = $('joyBase'), joyKnob = $('joyKnob');
   const mark = (e) => { lastTouch = performance.now(); e.preventDefault(); };
+  // un solo dito ovunque sullo schermo: su/giù = cammina, destra/sinistra = gira
   joyZone.addEventListener('pointerdown', (e) => {
     mark(e); if (touch.joyId !== null) return;
     touch.joyId = e.pointerId; touch.jx = e.clientX; touch.jy = e.clientY;
@@ -1474,37 +1473,22 @@ function bindTouch() {
     let dx = e.clientX - touch.jx, dy = e.clientY - touch.jy;
     const d = Math.hypot(dx, dy);
     if (d > JOY_R) { dx = dx / d * JOY_R; dy = dy / d * JOY_R; }
-    touch.moveX = dx / JOY_R; touch.moveY = dy / JOY_R;
+    const dead = (v) => Math.abs(v) < 0.12 ? 0 : (v - Math.sign(v) * 0.12) / 0.88;
+    touch.turn = dead(dx / JOY_R); touch.moveY = dead(dy / JOY_R);
     joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
   });
   const joyEnd = (e) => {
     if (e.pointerId !== touch.joyId) return;
-    touch.joyId = null; touch.moveX = touch.moveY = 0; joyBase.style.display = 'none';
+    touch.joyId = null; touch.turn = touch.moveY = 0; joyBase.style.display = 'none';
   };
   joyZone.addEventListener('pointerup', joyEnd); joyZone.addEventListener('pointercancel', joyEnd);
-  // trascinare per guardare: zona destra e anche il pulsante di fuoco
-  const lookStart = (e) => { mark(e); touch.lookIds.set(e.pointerId, [e.clientX, e.clientY]); e.currentTarget.setPointerCapture?.(e.pointerId); };
-  const lookMove = (e) => {
-    const last = touch.lookIds.get(e.pointerId); if (!last) return; mark(e);
-    if (state.playing) {
-      player.yaw -= (e.clientX - last[0]) * TOUCH_LOOK;
-      player.pitch = Math.max(-1.4, Math.min(1.4, player.pitch - (e.clientY - last[1]) * TOUCH_LOOK));
-    }
-    touch.lookIds.set(e.pointerId, [e.clientX, e.clientY]);
-  };
-  const lookEnd = (e) => touch.lookIds.delete(e.pointerId);
-  for (const el of [lookZone, $('tFire')]) {
-    el.addEventListener('pointerdown', lookStart); el.addEventListener('pointermove', lookMove);
-    el.addEventListener('pointerup', lookEnd); el.addEventListener('pointercancel', lookEnd);
-  }
   const fire = $('tFire');
-  fire.addEventListener('pointerdown', () => { initAudio(); if (state.playing) { player.firing = true; player.firedThisPress = false; } fire.classList.add('on'); });
+  fire.addEventListener('pointerdown', (e) => { mark(e); initAudio(); if (state.playing) { player.firing = true; player.firedThisPress = false; } fire.classList.add('on'); });
   const fireEnd = () => { player.firing = false; fire.classList.remove('on'); };
-  fire.addEventListener('pointerup', fireEnd); fire.addEventListener('pointercancel', fireEnd);
+  fire.addEventListener('pointerup', fireEnd); fire.addEventListener('pointercancel', fireEnd); fire.addEventListener('pointerleave', fireEnd);
   const tap = (id, fn) => $(id).addEventListener('pointerdown', (e) => { mark(e); if (state.playing) fn(); });
   tap('tReload', startReload);
-  tap('tPrev', () => cycleWeapon(-1));
-  tap('tNext', () => cycleWeapon(1));
+  tap('tWeapon', () => cycleWeapon(1));
   tap('tMap', toggleMapSize);
   $('tPause').addEventListener('pointerdown', (e) => { mark(e); pause(); });
   addEventListener('contextmenu', (e) => { if (IS_TOUCH) e.preventDefault(); });
@@ -1536,9 +1520,14 @@ function updatePlayer(dt) {
   if (keys.has('KeyS') || keys.has('ArrowDown')) fz += 1;
   if (keys.has('KeyA') || keys.has('ArrowLeft')) fx -= 1;
   if (keys.has('KeyD') || keys.has('ArrowRight')) fx += 1;
-  fx += touch.moveX; fz += touch.moveY;
+  fz += touch.moveY;
+  if (IS_TOUCH) {
+    // girare in modo progressivo (curva più dolce vicino al centro) e sguardo sempre in orizzontale
+    player.yaw -= Math.sign(touch.turn) * touch.turn * touch.turn * TOUCH_TURN * dt;
+    player.pitch *= Math.max(0, 1 - dt * 4);
+  }
   const len = Math.hypot(fx, fz);
-  const touchRun = Math.hypot(touch.moveX, touch.moveY) > 0.92;
+  const touchRun = touch.moveY < -0.85;
   let speed = keys.has('ShiftLeft') || keys.has('ShiftRight') || touchRun ? CONFIG.playerRun : CONFIG.playerSpeed;
   speed *= Math.min(1, len);      // joystick analogico: poca spinta = passo lento
   speed *= WEAPONS[player.weapon].slow || 1;
@@ -1650,6 +1639,7 @@ function fireWeapon(w, i) {
   shake = Math.min(0.5, shake + w.recoil * 0.6);
   vmKick = 1;
   camera.getWorldDirection(_dir);
+  if (IS_TOUCH) aimAssist(_dir);
   const ox = camera.position.x, oy = camera.position.y, oz = camera.position.z;
   if (w.kind === 'hitscan') {
     muzzleLight.intensity = 25; muzzleFlash.visible = true; muzzleT = 0.05;
@@ -1677,6 +1667,21 @@ function fireWeapon(w, i) {
       _dir.x * 26, _dir.y * 26, _dir.z * 26, w));
     smoke.burst(ox + _dir.x * 0.5, oy - 0.2, oz + _dir.z * 0.5, 10, 1.5, 1.2, 0x777777);
   }
+}
+
+// Mira assistita su telefono: se un nemico è quasi davanti e visibile, il colpo va verso di lui
+function aimAssist(dir) {
+  const ox = camera.position.x, oy = camera.position.y, oz = camera.position.z;
+  let best = null, bestA = 0.2;                       // circa 11 gradi
+  for (const e of enemies) {
+    if (e.dead) continue;
+    const ty = e.def.height * 0.6;
+    const dx = e.x - ox, dy = ty - oy, dz = e.z - oz, d = Math.hypot(dx, dy, dz);
+    if (d > 32 || d < 0.3) continue;
+    const a = Math.acos(Math.max(-1, Math.min(1, (dx * dir.x + dy * dir.y + dz * dir.z) / d)));
+    if (a < bestA && lineOfSight(ox, oz, e.x, e.z)) { bestA = a; best = [dx / d, dy / d, dz / d]; }
+  }
+  if (best) dir.set(best[0], best[1], best[2]);
 }
 
 function tracer(x0, y0, z0, x1, y1, z1) {
@@ -1972,7 +1977,7 @@ function pause() {
   state.playing = false; keys.clear(); player.firing = false;
   document.body.classList.remove('playing');
   pausedAt = performance.now();
-  touch.moveX = touch.moveY = 0; touch.joyId = null; touch.lookIds.clear();
+  touch.moveX = touch.moveY = touch.turn = 0; touch.joyId = null;
   $('goLabel').textContent = state.started ? (IS_TOUCH ? 'Pausa · tocca per continuare' : 'Pausa · clicca per continuare') : (IS_TOUCH ? 'Tocca per entrare' : 'Clicca per entrare');
   overlay.classList.remove('hidden');
 }
