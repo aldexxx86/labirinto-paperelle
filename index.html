@@ -2,7 +2,10 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d1020">
 <title>Paperelle nel Labirinto</title>
 <style>
   :root {
@@ -54,6 +57,8 @@
     background: radial-gradient(ellipse at center, rgba(30,20,60,.84), rgba(0,0,0,.93)); z-index: 10; padding: 16px; overflow: auto; }
   .overlay.hidden { display: none; }
   #overlay { cursor: pointer; }
+  .overlay { align-items: flex-start; justify-content: flex-start; }
+  .overlay > .card { margin: auto; }
   .card { max-width: 620px; text-align: center; }
   .card h1 { font-size: clamp(30px, 6vw, 52px); margin: 0 0 6px; background: var(--rainbow); -webkit-background-clip: text;
     background-clip: text; color: transparent; letter-spacing: 1px; }
@@ -104,6 +109,56 @@
   .credits a:hover { text-decoration: underline; }
   .boardStatus { font-size: 12px; opacity: .7; margin: -4px 0 8px; }
   .endgrid { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
+  /* ---------- Comandi touch (telefono / tablet) ---------- */
+  #touchUI { position: fixed; inset: 0; z-index: 5; display: none; touch-action: none; user-select: none; -webkit-user-select: none; }
+  body.mobile.playing #touchUI { display: block; }
+  #joyZone { position: absolute; left: 0; bottom: 0; width: 45%; height: 70%; touch-action: none; }
+  #lookZone { position: absolute; right: 0; top: 0; width: 55%; height: 100%; touch-action: none; }
+  #joyBase { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.35); background: rgba(255,255,255,.08); display: none; pointer-events: none; }
+  #joyKnob { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%;
+    background: rgba(255,210,63,.75); box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+  #joyHint { position: absolute; left: max(28px, env(safe-area-inset-left)); bottom: 28px; width: 110px; height: 110px; border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-size: 11px; opacity: .7; pointer-events: none; text-align: center; }
+  .tbtn { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); background: rgba(10,14,30,.55); color: var(--hud-fg);
+    font-family: inherit; font-weight: 800; touch-action: none; display: flex; align-items: center; justify-content: center; padding: 0;
+    -webkit-tap-highlight-color: transparent; }
+  .tbtn:active, .tbtn.on { background: rgba(255,210,63,.45); }
+  #tFire { right: max(22px, env(safe-area-inset-right)); bottom: 26px; width: 92px; height: 92px; font-size: 15px; background: rgba(255,77,94,.45); border-color: rgba(255,160,170,.7); }
+  #tReload { right: calc(max(22px, env(safe-area-inset-right)) + 104px); bottom: 22px; width: 54px; height: 54px; font-size: 18px; }
+  #tNext { right: calc(max(22px, env(safe-area-inset-right)) + 14px); bottom: 132px; width: 50px; height: 50px; font-size: 18px; }
+  #tPrev { right: calc(max(22px, env(safe-area-inset-right)) + 72px); bottom: 118px; width: 46px; height: 46px; font-size: 16px; }
+  #tPause { right: max(12px, env(safe-area-inset-right)); top: 124px; width: 44px; height: 44px; font-size: 14px; }
+  #tMap { right: calc(max(12px, env(safe-area-inset-right)) + 52px); top: 124px; width: 44px; height: 44px; font-size: 11px; }
+  .touchHelp { display: none; }
+  body.mobile .touchHelp { display: block; }
+  body.mobile .keys { display: none; }
+  body.mobile #crosshair { width: 18px; height: 18px; }
+  body.mobile #topbar { top: 6px; gap: 6px; }
+  body.mobile .panel { padding: 4px 9px; border-radius: 9px; }
+  body.mobile #score { font-size: 20px; min-width: 80px; }
+  body.mobile #score small, body.mobile .lbl { font-size: 9px; letter-spacing: 1px; }
+  body.mobile #ducks { font-size: 11px; line-height: 1.3; }
+  body.mobile #enemies { display: none; }
+  body.mobile #minimap { top: 6px; right: max(8px, env(safe-area-inset-right)); border-radius: 9px; }
+  body.mobile #health { left: max(8px, env(safe-area-inset-left)); top: 6px; bottom: auto; width: 130px; }
+  body.mobile #hpText { font-size: 16px; }
+  body.mobile .bar { height: 7px; }
+  body.mobile #weapon { right: calc(max(22px, env(safe-area-inset-right)) + 172px); bottom: 14px; min-width: 0; text-align: right; }
+  body.mobile #wName { font-size: 12px; }
+  body.mobile #wAmmo { font-size: 20px; }
+  body.mobile #wAmmo span { font-size: 12px; }
+  body.mobile #slots { display: none; }
+  body.mobile #fps { display: none; }
+  body.mobile #toasts { top: 18%; }
+  body.mobile .toast { font-size: 13px; padding: 4px 10px; }
+  body.mobile #reload { top: 62%; }
+  body.mobile .card h1 { font-size: clamp(26px, 7vw, 40px); }
+  body.mobile .card p { font-size: 14px; margin: 5px 0; }
+  body.mobile .stats { font-size: 13px; }
+  body.mobile .board table { font-size: 12px; }
+  #rotateHint { display: none; font-size: 13px; color: var(--accent); margin-top: 8px; }
+  @media (orientation: portrait) { body.mobile #rotateHint { display: block; } }
   @media (max-width: 760px) { #topbar { flex-wrap: wrap; justify-content: center; width: 96vw; } #enemies { display: none; } .keys { grid-template-columns: auto 1fr; } }
 </style>
 </head>
@@ -124,11 +179,24 @@
 <div id="weapon" class="hud panel"><div id="wName"></div><div id="wAmmo"></div><div id="slots"></div></div>
 <div id="fps" class="hud"></div>
 
+<div id="touchUI">
+  <div id="joyZone"><div id="joyHint">trascina<br>per muoverti</div><div id="joyBase"><div id="joyKnob"></div></div></div>
+  <div id="lookZone"></div>
+  <button class="tbtn" id="tFire" type="button">FUOCO</button>
+  <button class="tbtn" id="tReload" type="button">R</button>
+  <button class="tbtn" id="tPrev" type="button">◀</button>
+  <button class="tbtn" id="tNext" type="button">▶</button>
+  <button class="tbtn" id="tMap" type="button">MAPPA</button>
+  <button class="tbtn" id="tPause" type="button">II</button>
+</div>
+
 <div id="overlay" class="overlay">
   <div class="card">
     <h1>Paperelle nel Labirinto</h1>
     <p>Mille paperelle girano per il labirinto e zombie, preti, suore spippate e leoni se le stanno mangiando. Il tuo punteggio è fatto dalle paperelle che restano vive: quelle arcobaleno valgono 5 punti.</p>
     <p>Elimina tutti i mangiapaperelle per vincere. Puoi colpire anche le paperelle, ma ti costa caro.</p>
+    <p class="touchHelp">Joystick a sinistra per muoverti (spingi fino in fondo per correre), trascina il dito a destra per guardarti intorno, tieni premuto FUOCO per sparare. ◀ ▶ cambiano arma, R ricarica.</p>
+    <div id="rotateHint">Gira il telefono in orizzontale per giocare meglio.</div>
     <div class="keys">
       <kbd>W A S D</kbd><span>muoviti</span>
       <kbd>Mouse</kbd><span>mira</span>
@@ -189,7 +257,9 @@
       <li>Le casse ricompaiono dopo un po' in altri punti del labirinto.</li>
       <li>Le esplosioni fanno male anche a te se sei troppo vicino.</li>
     </ul>
-    <h3>Comandi</h3>
+    <h3>Comandi da telefono o tablet</h3>
+    <p>Joystick a sinistra per muoverti (spingilo fino in fondo per correre), trascina il dito sulla metà destra dello schermo per guardarti intorno, tieni premuto FUOCO per sparare (mentre lo tieni premuto puoi anche trascinare per mirare). ◀ ▶ cambiano arma, R ricarica, MAPPA ingrandisce la mappa, II mette in pausa.</p>
+    <h3>Comandi da computer</h3>
     <p>WASD per muoverti, mouse per mirare, clic per sparare, Shift per correre, 1–6 o rotella per cambiare arma, R per ricaricare, M per la mappa grande, Esc per la pausa.</p>
     <h3>Autore e licenza</h3>
     <p>Creato da Matteo Alderighi, Firenze, Italia, 2026, con l'aiuto dell'intelligenza artificiale.
@@ -235,6 +305,9 @@ const FIREBASE_SDK = '10.12.2';
 // CONFIG: tutti i numeri di bilanciamento in un posto solo
 // =====================================================================
 const params = new URLSearchParams(location.search);
+// Telefono o tablet: comandi touch e qualità grafica ridotta
+const IS_TOUCH = params.has('touch') || (matchMedia('(pointer: coarse)').matches && navigator.maxTouchPoints > 0);
+if (IS_TOUCH) document.body.classList.add('mobile');
 const DIFFICULTIES = {
   facile:    { count: 0.6, speed: 0.9, dmg: 0.55 },
   normale:   { count: 1.0, speed: 1.0, dmg: 1.0 },
@@ -261,6 +334,7 @@ const CONFIG = {
   enemySafeDistance: 14,      // tasselli dal giocatore in cui non nascono nemici
   fogNear: 6, fogFar: 55,
 };
+if (IS_TOUCH) Object.assign(CONFIG, { fogFar: 42, duckAnimDistance: 22 });
 
 const ENEMY_TYPES = {
   zombie: { name: 'Zombie', plural: 'Zombie', count: 16, hp: 150, speed: 1.5, radius: 0.45, height: 1.9, dmg: 10, range: 1.4, cd: 1.3,
@@ -521,8 +595,8 @@ function mergeParts(parts) {
 // SCENA, RENDERER, LUCI
 // =====================================================================
 const canvas = document.getElementById('game');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !IS_TOUCH, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, IS_TOUCH ? 1.25 : 1.5));
 renderer.setSize(innerWidth, innerHeight);
 renderer.autoClear = false;
 const scene = new THREE.Scene();
@@ -1364,20 +1438,78 @@ addEventListener('keydown', (e) => {
 addEventListener('keyup', (e) => keys.delete(e.code));
 addEventListener('blur', () => { keys.clear(); player.firing = false; });
 addEventListener('mousemove', (e) => {
-  if (!state.playing) return;
+  if (!state.playing || (IS_TOUCH && performance.now() - lastTouch < 1000)) return;
   player.yaw -= e.movementX * CONFIG.mouseSens;
   player.pitch = Math.max(-1.4, Math.min(1.4, player.pitch - e.movementY * CONFIG.mouseSens));
 });
-addEventListener('mousedown', (e) => { if (state.playing && e.button === 0) { player.firing = true; player.firedThisPress = false; initAudio(); } });
+addEventListener('mousedown', (e) => { if (IS_TOUCH && performance.now() - lastTouch < 1000) return; if (state.playing && e.button === 0) { player.firing = true; player.firedThisPress = false; initAudio(); } });
 addEventListener('mouseup', (e) => { if (e.button === 0) player.firing = false; });
 addEventListener('wheel', (e) => {
   if (!state.playing) return;
-  const dir = Math.sign(e.deltaY);
+  cycleWeapon(Math.sign(e.deltaY));
+}, { passive: true });
+function cycleWeapon(dir) {
   for (let k = 1; k <= WEAPONS.length; k++) {
     const i = (player.weapon + dir * k + WEAPONS.length * 2) % WEAPONS.length;
     if (player.owned[i]) { selectWeapon(i); break; }
   }
-}, { passive: true });
+}
+
+// ---------------- Comandi touch ----------------
+const touch = { moveX: 0, moveY: 0, joyId: null, jx: 0, jy: 0, lookIds: new Map() };
+let lastTouch = -1e9;
+const TOUCH_LOOK = 0.0055, JOY_R = 52;
+function bindTouch() {
+  const joyZone = $('joyZone'), joyBase = $('joyBase'), joyKnob = $('joyKnob'), lookZone = $('lookZone');
+  const mark = (e) => { lastTouch = performance.now(); e.preventDefault(); };
+  joyZone.addEventListener('pointerdown', (e) => {
+    mark(e); if (touch.joyId !== null) return;
+    touch.joyId = e.pointerId; touch.jx = e.clientX; touch.jy = e.clientY;
+    joyZone.setPointerCapture?.(e.pointerId);
+    joyBase.style.display = 'block'; joyBase.style.left = e.clientX + 'px'; joyBase.style.top = e.clientY + 'px';
+    joyKnob.style.transform = ''; $('joyHint').style.display = 'none';
+  });
+  joyZone.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== touch.joyId) return; mark(e);
+    let dx = e.clientX - touch.jx, dy = e.clientY - touch.jy;
+    const d = Math.hypot(dx, dy);
+    if (d > JOY_R) { dx = dx / d * JOY_R; dy = dy / d * JOY_R; }
+    touch.moveX = dx / JOY_R; touch.moveY = dy / JOY_R;
+    joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+  const joyEnd = (e) => {
+    if (e.pointerId !== touch.joyId) return;
+    touch.joyId = null; touch.moveX = touch.moveY = 0; joyBase.style.display = 'none';
+  };
+  joyZone.addEventListener('pointerup', joyEnd); joyZone.addEventListener('pointercancel', joyEnd);
+  // trascinare per guardare: zona destra e anche il pulsante di fuoco
+  const lookStart = (e) => { mark(e); touch.lookIds.set(e.pointerId, [e.clientX, e.clientY]); e.currentTarget.setPointerCapture?.(e.pointerId); };
+  const lookMove = (e) => {
+    const last = touch.lookIds.get(e.pointerId); if (!last) return; mark(e);
+    if (state.playing) {
+      player.yaw -= (e.clientX - last[0]) * TOUCH_LOOK;
+      player.pitch = Math.max(-1.4, Math.min(1.4, player.pitch - (e.clientY - last[1]) * TOUCH_LOOK));
+    }
+    touch.lookIds.set(e.pointerId, [e.clientX, e.clientY]);
+  };
+  const lookEnd = (e) => touch.lookIds.delete(e.pointerId);
+  for (const el of [lookZone, $('tFire')]) {
+    el.addEventListener('pointerdown', lookStart); el.addEventListener('pointermove', lookMove);
+    el.addEventListener('pointerup', lookEnd); el.addEventListener('pointercancel', lookEnd);
+  }
+  const fire = $('tFire');
+  fire.addEventListener('pointerdown', () => { initAudio(); if (state.playing) { player.firing = true; player.firedThisPress = false; } fire.classList.add('on'); });
+  const fireEnd = () => { player.firing = false; fire.classList.remove('on'); };
+  fire.addEventListener('pointerup', fireEnd); fire.addEventListener('pointercancel', fireEnd);
+  const tap = (id, fn) => $(id).addEventListener('pointerdown', (e) => { mark(e); if (state.playing) fn(); });
+  tap('tReload', startReload);
+  tap('tPrev', () => cycleWeapon(-1));
+  tap('tNext', () => cycleWeapon(1));
+  tap('tMap', toggleMapSize);
+  $('tPause').addEventListener('pointerdown', (e) => { mark(e); pause(); });
+  addEventListener('contextmenu', (e) => { if (IS_TOUCH) e.preventDefault(); });
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && state.playing) pause(); });
 
 function selectWeapon(i) {
   if (!player.owned[i]) { toast(`Non hai ancora: ${WEAPONS[i].name}`, '', 'noweap', 1); return; }
@@ -1404,8 +1536,11 @@ function updatePlayer(dt) {
   if (keys.has('KeyS') || keys.has('ArrowDown')) fz += 1;
   if (keys.has('KeyA') || keys.has('ArrowLeft')) fx -= 1;
   if (keys.has('KeyD') || keys.has('ArrowRight')) fx += 1;
+  fx += touch.moveX; fz += touch.moveY;
   const len = Math.hypot(fx, fz);
-  let speed = keys.has('ShiftLeft') || keys.has('ShiftRight') ? CONFIG.playerRun : CONFIG.playerSpeed;
+  const touchRun = Math.hypot(touch.moveX, touch.moveY) > 0.92;
+  let speed = keys.has('ShiftLeft') || keys.has('ShiftRight') || touchRun ? CONFIG.playerRun : CONFIG.playerSpeed;
+  speed *= Math.min(1, len);      // joystick analogico: poca spinta = passo lento
   speed *= WEAPONS[player.weapon].slow || 1;
   player.speedNow = 0;
   if (len > 0) {
@@ -1697,9 +1832,11 @@ const mazeImg = document.createElement('canvas'); mazeImg.width = W; mazeImg.hei
   }
 }
 let mapBig = false;
+const MINIMAP_SIZE = IS_TOUCH ? 110 : 200;
+mini.width = mini.height = MINIMAP_SIZE;
 function toggleMapSize() {
   mapBig = !mapBig;
-  mini.width = mini.height = mapBig ? Math.min(innerWidth, innerHeight) * 0.7 | 0 : 200;
+  mini.width = mini.height = mapBig ? Math.min(innerWidth, innerHeight) * (IS_TOUCH ? 0.85 : 0.7) | 0 : MINIMAP_SIZE;
 }
 const liveScore = () => Math.max(0, duckCount.normal * CONFIG.duckPoints + duckCount.rainbow * CONFIG.rainbowPoints - stats.penalty);
 function drawMinimap(time) {
@@ -1793,7 +1930,10 @@ $name.addEventListener('keydown', (ev) => {
 });
 $name.addEventListener('input', () => { $name.classList.remove('err'); $('nameErr').textContent = ''; });
 function playerName() { return $name.value.trim().replace(/\s+/g, ' ').slice(0, 16); }
+let pausedAt = -1e9;
+if (IS_TOUCH) $('goLabel').textContent = 'Tocca per entrare';
 overlay.addEventListener('click', () => {
+  if (performance.now() - pausedAt < 500) return;   // il tocco sul tasto pausa non deve far ripartire il gioco
   if (!state.started && !playerName()) {
     $name.classList.remove('err'); void $name.offsetWidth; $name.classList.add('err');
     $('nameErr').textContent = 'Scrivi il tuo nome per entrare in classifica';
@@ -1801,6 +1941,12 @@ overlay.addEventListener('click', () => {
     return;
   }
   initAudio();
+  if (IS_TOUCH) {
+    // a schermo intero e in orizzontale, dove il browser lo consente
+    try { const fs = document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }); fs?.then?.(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {}); } catch (e) {}
+    startPlaying();
+    return;
+  }
   canvas.requestPointerLock?.();
   setTimeout(() => { if (!document.pointerLockElement) startPlaying(); }, 300);
 });
@@ -1819,16 +1965,21 @@ function startPlaying() {
     keys.clear();
   }
   state.playing = true; state.started = true; overlay.classList.add('hidden');
+  document.body.classList.add('playing');
 }
 function pause() {
   if (state.over) return;
   state.playing = false; keys.clear(); player.firing = false;
-  $('goLabel').textContent = state.started ? 'Pausa · clicca per continuare' : 'Clicca per entrare';
+  document.body.classList.remove('playing');
+  pausedAt = performance.now();
+  touch.moveX = touch.moveY = 0; touch.joyId = null; touch.lookIds.clear();
+  $('goLabel').textContent = state.started ? (IS_TOUCH ? 'Pausa · tocca per continuare' : 'Pausa · clicca per continuare') : (IS_TOUCH ? 'Tocca per entrare' : 'Clicca per entrare');
   overlay.classList.remove('hidden');
 }
 function endGame(win, reason) {
   if (state.over) return;
   state.over = true; state.playing = false; player.firing = false;
+  document.body.classList.remove('playing');
   $toasts.innerHTML = '';
   document.exitPointerLock?.();
   overlay.classList.add('hidden');
@@ -1981,6 +2132,7 @@ function simStep(dt) {
   updateCrates(dt);
   checkEnd();
 }
+if (IS_TOUCH) bindTouch();
 renderer.info.autoReset = false;
 const clock = new THREE.Clock();
 let simTime = 0;

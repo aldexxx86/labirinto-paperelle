@@ -45,6 +45,10 @@ Pistola Colt (munizioni infinite), fucile a pompa, Uzi, mitragliatrice, bombe a 
 | M | Mappa grande |
 | Esc | Pausa |
 
+### Da telefono o tablet
+
+Il gioco funziona anche su mobile, meglio in orizzontale: joystick a sinistra per muoversi (spinto fino in fondo per correre), trascina il dito sulla metà destra per guardarti intorno, tieni premuto **FUOCO** per sparare. ◀ ▶ cambiano arma, **R** ricarica, **MAPPA** ingrandisce la mappa, **II** mette in pausa.
+
 Nel menu iniziale c'è anche il pulsante **Guida al gioco**.
 
 ## Avviarlo in locale
