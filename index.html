@@ -180,7 +180,7 @@
 <div id="fps" class="hud"></div>
 
 <div id="touchUI">
-  <div id="joyZone"><div id="joyHint">Appoggia un dito e trascinalo:<br>su/giù per camminare, destra/sinistra per girare</div><div id="joyBase"><div id="joyKnob"></div></div></div>
+  <div id="joyZone"><div id="joyHint">Appoggia un dito e trascinalo:<br>su/giù per camminare, destra/sinistra per girare.<br>Trascina il FUOCO per mirare in alto e in basso</div><div id="joyBase"><div id="joyKnob"></div></div></div>
   <button class="tbtn" id="tFire" type="button">FUOCO</button>
   <button class="tbtn" id="tWeapon" type="button">ARMA</button>
   <button class="tbtn" id="tReload" type="button">RICARICA</button>
@@ -193,7 +193,7 @@
     <h1>Paperelle nel Labirinto</h1>
     <p>Mille paperelle girano per il labirinto e zombie, preti, suore spippate e leoni se le stanno mangiando. Il tuo punteggio è fatto dalle paperelle che restano vive: quelle arcobaleno valgono 5 punti.</p>
     <p>Elimina tutti i mangiapaperelle per vincere. Puoi colpire anche le paperelle, ma ti costa caro.</p>
-    <p class="touchHelp">Si gioca con un dito: appoggialo ovunque sullo schermo e trascinalo in su per camminare (più lo sposti più vai veloce), in giù per indietreggiare, a destra o a sinistra per girarti. Con l'altro pollice tieni premuto FUOCO: la mira aggancia da sola il nemico davanti a te.</p>
+    <p class="touchHelp">Si gioca con un dito: appoggialo ovunque sullo schermo e trascinalo in su per camminare (più lo sposti più vai veloce), in giù per indietreggiare, a destra o a sinistra per girarti. Con l'altro pollice tieni premuto FUOCO e, senza staccarlo, trascinalo per mirare in alto, in basso e ai lati (oppure trascina un secondo dito in un punto libero dello schermo). La mira aiuta ad agganciare il nemico davanti a te.</p>
     <div id="rotateHint">Gira il telefono in orizzontale per giocare meglio.</div>
     <div class="keys">
       <kbd>W A S D</kbd><span>muoviti</span>
@@ -1454,21 +1454,37 @@ function cycleWeapon(dir) {
 }
 
 // ---------------- Comandi touch ----------------
-const touch = { moveX: 0, moveY: 0, turn: 0, joyId: null, jx: 0, jy: 0 };
+const touch = { moveX: 0, moveY: 0, turn: 0, joyId: null, jx: 0, jy: 0, lookId: null, lx: 0, ly: 0 };
 let lastTouch = -1e9;
 const TOUCH_TURN = 2.4, JOY_R = 60;     // rad/s a dito tutto spostato, raggio del joystick in px
+const LOOK_SENS = 0.0065, PITCH_MAX = 1.2; // rad per px trascinato col secondo dito / col FUOCO, limite su/giù
 function bindTouch() {
   const joyZone = $('joyZone'), joyBase = $('joyBase'), joyKnob = $('joyKnob');
   const mark = (e) => { lastTouch = performance.now(); e.preventDefault(); };
   // un solo dito ovunque sullo schermo: su/giù = cammina, destra/sinistra = gira
+  // trascinare un secondo dito (o il dito sul FUOCO) sposta la visuale: su/giù = mira in alto/basso
+  const lookStart = (e) => { touch.lookId = e.pointerId; touch.lx = e.clientX; touch.ly = e.clientY; };
+  const lookMove = (e) => {
+    if (e.pointerId !== touch.lookId) return false;
+    const dx = e.clientX - touch.lx, dy = e.clientY - touch.ly;
+    touch.lx = e.clientX; touch.ly = e.clientY;
+    if (state.playing) {
+      player.yaw -= dx * LOOK_SENS;
+      player.pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, player.pitch - dy * LOOK_SENS));
+    }
+    return true;
+  };
+  const lookEnd = (e) => { if (e.pointerId === touch.lookId) touch.lookId = null; };
   joyZone.addEventListener('pointerdown', (e) => {
-    mark(e); if (touch.joyId !== null) return;
+    mark(e);
+    if (touch.joyId !== null) { if (touch.lookId === null) { lookStart(e); joyZone.setPointerCapture?.(e.pointerId); } return; }
     touch.joyId = e.pointerId; touch.jx = e.clientX; touch.jy = e.clientY;
     joyZone.setPointerCapture?.(e.pointerId);
     joyBase.style.display = 'block'; joyBase.style.left = e.clientX + 'px'; joyBase.style.top = e.clientY + 'px';
     joyKnob.style.transform = ''; $('joyHint').style.display = 'none';
   });
   joyZone.addEventListener('pointermove', (e) => {
+    if (lookMove(e)) { mark(e); return; }
     if (e.pointerId !== touch.joyId) return; mark(e);
     let dx = e.clientX - touch.jx, dy = e.clientY - touch.jy;
     const d = Math.hypot(dx, dy);
@@ -1478,14 +1494,19 @@ function bindTouch() {
     joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
   });
   const joyEnd = (e) => {
+    lookEnd(e);
     if (e.pointerId !== touch.joyId) return;
     touch.joyId = null; touch.turn = touch.moveY = 0; joyBase.style.display = 'none';
   };
   joyZone.addEventListener('pointerup', joyEnd); joyZone.addEventListener('pointercancel', joyEnd);
   const fire = $('tFire');
-  fire.addEventListener('pointerdown', (e) => { mark(e); initAudio(); if (state.playing) { player.firing = true; player.firedThisPress = false; } fire.classList.add('on'); });
-  const fireEnd = () => { player.firing = false; fire.classList.remove('on'); };
-  fire.addEventListener('pointerup', fireEnd); fire.addEventListener('pointercancel', fireEnd); fire.addEventListener('pointerleave', fireEnd);
+  fire.addEventListener('pointerdown', (e) => {
+    mark(e); initAudio(); if (state.playing) { player.firing = true; player.firedThisPress = false; } fire.classList.add('on');
+    if (touch.lookId === null) { lookStart(e); fire.setPointerCapture?.(e.pointerId); }
+  });
+  fire.addEventListener('pointermove', (e) => { if (lookMove(e)) mark(e); });
+  const fireEnd = (e) => { lookEnd(e); player.firing = false; fire.classList.remove('on'); };
+  fire.addEventListener('pointerup', fireEnd); fire.addEventListener('pointercancel', fireEnd);
   const tap = (id, fn) => $(id).addEventListener('pointerdown', (e) => { mark(e); if (state.playing) fn(); });
   tap('tReload', startReload);
   tap('tWeapon', () => cycleWeapon(1));
@@ -1522,9 +1543,8 @@ function updatePlayer(dt) {
   if (keys.has('KeyD') || keys.has('ArrowRight')) fx += 1;
   fz += touch.moveY;
   if (IS_TOUCH) {
-    // girare in modo progressivo (curva più dolce vicino al centro) e sguardo sempre in orizzontale
+    // girare in modo progressivo (curva più dolce vicino al centro); la mira su/giù resta dove l'hai lasciata
     player.yaw -= Math.sign(touch.turn) * touch.turn * touch.turn * TOUCH_TURN * dt;
-    player.pitch *= Math.max(0, 1 - dt * 4);
   }
   const len = Math.hypot(fx, fz);
   const touchRun = touch.moveY < -0.85;
@@ -1977,7 +1997,7 @@ function pause() {
   state.playing = false; keys.clear(); player.firing = false;
   document.body.classList.remove('playing');
   pausedAt = performance.now();
-  touch.moveX = touch.moveY = touch.turn = 0; touch.joyId = null;
+  touch.moveX = touch.moveY = touch.turn = 0; touch.joyId = touch.lookId = null;
   $('goLabel').textContent = state.started ? (IS_TOUCH ? 'Pausa · tocca per continuare' : 'Pausa · clicca per continuare') : (IS_TOUCH ? 'Tocca per entrare' : 'Clicca per entrare');
   overlay.classList.remove('hidden');
 }
